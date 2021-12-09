@@ -1,0 +1,173 @@
+<head>
+
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>Sample Web Form - ClickDimensions</title>
+<script type="text/javascript">
+
+function myFunction1(){
+let request2 = new XMLHttpRequest();
+if(document.getElementById("Customers").value=="zkmtest"){
+ request2.open("POST", "https://us.bmz.cloud/clscenter/oauth/token?username=dzheng&password=nb8ZgVfGNMs84PbJt&tenant=zkmtest",);
+}
+if(document.getElementById("Customers").value=="marion_il"){
+ request2.open("POST", "https://us.bmz.cloud/clscenter/oauth/token?username=dzheng&password=Dragon123!&tenant=marionil",);
+}
+if(document.getElementById("Customers").value=="wilmington_ny_sr"){
+ request2.open("POST", "https://us.bmz.cloud/clscenter/oauth/token?username=dzheng&password=Dragon123!&tenant=wilmingtonnysr",);
+}
+if(document.getElementById("Customers").value=="lake_arrowhead_ca"){
+ request2.open("POST", "https://us.bmz.cloud/clscenter/oauth/token?username=dzheng&password=Dragon123!&tenant=lakearrowheadca",);
+}
+if(document.getElementById("Customers").value=="nwsd_oh_sr"){
+ request2.open("POST", "https://us.bmz.cloud/clscenter/oauth/token?username=dzheng&password=Dragon123!&tenant=nwsdohsr",);
+}
+request2.send();
+request2.onload = () => {
+document.getElementById("Token").value = request2.response.split('"')[3];
+}
+var AuthToken = document.getElementById("Token").value;
+let request4 = new XMLHttpRequest();
+request4.open("GET", "https://lookup.loca.lt/getMIULookup?miuid="+(document.getElementById("BarCode").value),);
+request4.send();
+request4.onload = () => {
+document.getElementById("JSONappKey").value = request4.response.split('"')[3];
+document.getElementById("JSONdeviceEUI").value = request4.response.split('"')[7];
+document.getElementById("joinEUI").value = request4.response.split('"')[11];
+}
+}
+
+function myFunction2(){
+let request = new XMLHttpRequest();
+let request3 = new XMLHttpRequest();
+request3.open("POST", "https://lookup.loca.lt/postCustomerLookup?miuid="+(document.getElementById("BarCode").value)+"&customerid="+(document.getElementById("Customers").value),);
+request3.send();
+request.open("POST", "https://lookup.loca.lt/postProviderLookup?miuid="+(document.getElementById("BarCode").value)+"&providerid="+(document.getElementById("provider").value),);
+request.send();
+let request5 = new XMLHttpRequest();
+request5.open("POST", "https://lookup.loca.lt/postProvision"+"?joinEUI="+document.getElementById("joinEUI").value+"&devEUI="+document.getElementById("JSONdeviceEUI").value+"&appKey="+document.getElementById("JSONappKey").value+"&AuthToken="+document.getElementById("Token").value,true);
+request5.send();
+alert("shipment information sent");
+}
+
+function ini()
+{
+
+// Retrieve the code
+var code =document.getElementById("BarCode").value;
+
+// Return false to prevent the form from submitting
+return false;
+
+}
+
+var count = 0;
+document.onkeyup = function(e) {
+	if((e.which == 13)&&(count == 0)){
+	document.getElementById("joinEUI").focus();
+	count++;
+	}
+	else if((e.which == 13)&&(count == 1)){
+	document.getElementById("appKey").focus();
+	count++;
+	}	
+};
+
+
+
+
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- End field validation script -->
+
+
+</head>
+<body onLoad="document.barcodeform.BarCode.focus()">
+
+<p>Pre-Shipment scan</p>
+
+<form onsubmit="return ini()" name="barcodeform" id="barcodeform"> 
+    <table> 
+        <tbody>             
+            <tr> 
+                <td style="width: 20%">Customers</td> 
+                <td> 
+                        <select id="Customers" name="Customers" style="width: 300">                             
+                            <option value="zkmtest">Zenner USA</option>
+						    <option value="marion_il">Marion, IL</option>
+                            <option value="wilmington_ny_sr">Wilmington, NY</option> 
+                            <option value="lake_arrowhead_ca">Lake Arrowhead CSD</option> 
+                            <option value="nwsd_oh_sr">Northwestern 114, OH</option>                             
+                        </select> 
+                </td> 
+            </tr>
+			<tr> 
+                <td style="width: 20%"> 
+                    Service Provider:
+                </td>
+                <td> 
+                        <select id="provider" name="provider" style="width: 300">                             
+                            <option value="zkmtest">Zenner USA</option>                        
+                        </select> 
+                </td> 
+            </tr>
+            <tr> 
+                <td style="width: 20%"> 
+                    Bar Code:
+                </td>
+                <td>
+                  <input type="text" id="BarCode" value="" /><br/>
+                </td> 
+            </tr> 
+			<tr> 
+                <td style="width: 20%"></td>
+				<td> 
+                    <button onclick="myFunction1()" type="button">Sync</button>
+                </td> 
+            </tr> 
+			<tr> 
+                <td style="width: 20%"> 
+                    joinEUI:
+                </td>
+                <td>
+                  <input type="text" id="joinEUI" value="" /><br/>
+                </td> 
+            </tr>
+			<tr> 
+                <td style="width: 20%"> 
+                    Token:
+                </td>
+                <td>
+                  <input type="text" id="Token"/><br/>
+                </td> 
+            </tr> 	
+			<tr> 
+                <td style="width: 20%"> 
+                    appKey:
+                </td>
+                <td>
+                  <input type="text" id="JSONappKey"/><br/>
+                </td> 
+            </tr> 
+			<tr> 
+                <td style="width: 20%"> 
+                    deviceEUI:
+                </td>
+                <td>
+                  <input type="text" id="JSONdeviceEUI"/><br/>
+                </td> 
+            </tr> 			 			
+            <tr> 
+                <td style="width: 20%"></td>
+				<td> 
+                    <button onclick="myFunction2()" type="button">Ship</button>
+                </td> 
+            </tr> 
+        </tbody> 
+    </table> 
+    </form> 
+
+
+
+
+
+</body>
